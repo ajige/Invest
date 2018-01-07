@@ -180,7 +180,7 @@ if __name__ == "__main__":
 	#plt.show()
 	#fig, axes = plt.subplots(2,2)
 	
-	codelist = download.LoadCodelist('Appliances.txt')
+	codelist = download.LoadCodelist('realeastatecode')
 	fig, axes = plt.subplots(2, len(codelist))
 	
 	cnt = 0
