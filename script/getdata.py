@@ -14,7 +14,7 @@ import datetime
 from scipy.stats.stats import pearsonr 
 
 def GetSz50():
-	sz50 = pd.read_csv('c:\\quant\\basic\\sz50.csv', index_col=0, encoding='utf-8', dtype={'code':np.str})
+	sz50 = pd.read_csv('c:\\invest\\basic\\sz50.csv', index_col=0, encoding='utf-8', dtype={'code':np.str})
 	sz50.append({'code':'sh','name':'index'}, ignore_index = True)
 	#print sz50
 	sz50 = sz50.set_index('code')
@@ -22,8 +22,8 @@ def GetSz50():
 	return sz50
 	
 def GetHs300():
-	#hs300 = pd.read_csv('c:\\quant\\basic\\hs300.csv', index_col=0, encoding='utf-8', dtype={'code':np.str})
-	hs300 = pd.read_csv('c:\\quant\\basic\\zz500.csv', index_col=0, encoding='utf-8', dtype={'code':np.str})
+	#hs300 = pd.read_csv('c:\\invest\\basic\\hs300.csv', index_col=0, encoding='utf-8', dtype={'code':np.str})
+	hs300 = pd.read_csv('c:\\invest\\basic\\zz500.csv', index_col=0, encoding='utf-8', dtype={'code':np.str})
 	#hs300 = hs300.append({'code':'sh', 'name':'index','date': '2016-08-01','weight':0}, ignore_index=True)
 	#print hs300
 	hs300 = hs300.set_index('code')
@@ -32,12 +32,12 @@ def GetHs300():
 	return hs300
 
 def GetZz500():
-	zz500 = pd.read_csv('c:\\quant\\basic\\zz500.csv', index_col=0, encoding='utf-8', dtype={'code':np.str})
+	zz500 = pd.read_csv('c:\\invest\\basic\\zz500.csv', index_col=0, encoding='utf-8', dtype={'code':np.str})
 	#hs300 = hs300.append({'code':'sh', 'name':'index','date': '2016-08-01','weight':0}, ignore_index=True)
 	#print hs300
 	zz500 = zz500.set_index('code')
 	
-	#hs300 = pd.read_csv('c:\\quant\\basic\\hs300.csv', index_col=0, encoding='utf-8', dtype={'code':np.str})
+	#hs300 = pd.read_csv('c:\\invest\\basic\\hs300.csv', index_col=0, encoding='utf-8', dtype={'code':np.str})
 	#hs300 = hs300.set_index('code')
 	#pdb.set_trace()
 	#print zz500
@@ -62,7 +62,7 @@ def GetPriceVolume(code=''):
 			#print code,name
 			#name = sz50.ix[idx]['name']
 			#print code, name
-			filename = 'C:\quant\\pv\\%s.csv' % (code)
+			filename = 'C:\invest\\pv\\%s.csv' % (code)
 			#print filename
 			#second = ts.get_h_data(code)
 			second = pd.read_csv(filename, encoding="gbk", index_col=1, parse_dates=True) ## previously index_col = 0
@@ -78,7 +78,7 @@ def GetPriceVolume(code=''):
 			name = sz50['name'][code].decode('UTF-8')
 		else:
 			name = code
-		filename = 'C:\quant\\pv\\%s.csv' % (code)		
+		filename = 'C:\invest\\pv\\%s.csv' % (code)		
 		second = pd.read_csv(filename, encoding="gbk", index_col=1, parse_dates=True)
 		rawdict[code] = second
 		nameseries[code] = name
@@ -122,7 +122,7 @@ def GetPriceVolume(code=''):
 def GetBasic():
 	sz50 = GetHs300()
 	#basic = ts.get_stock_basics()
-	filename="C:\quant\\basic\\basic.csv"
+	filename="C:\invest\\basic\\basic.csv"
 	basic = pd.read_csv(filename, encoding='utf-8', dtype={'code':np.str}, parse_dates=True)
 	#print basic
 	basic = basic.set_index('code')
@@ -158,7 +158,7 @@ def GetReport(indicator):
 		for quarter in range(1,5):
 			if year == 2017 and quarter == 4:
 				break;
-			filename = 'c:\\quant\\basic\\report\\%d%d.csv' % (year, quarter)
+			filename = 'c:\\invest\\basic\\report\\%d%d.csv' % (year, quarter)
 			df = pd.read_csv(filename, encoding='utf-8', index_col=0, dtype={'code':np.str})
 			df = df.drop_duplicates(subset='code')
 			df = df.set_index('code')
@@ -196,7 +196,7 @@ def GetProfit(indicator):
 		for quarter in range(1,5):
 			if year == 2017 and quarter == 4:
 				break;
-			filename='c:\\quant\\basic\\profit\\%d%d.csv' % (year, quarter)
+			filename='c:\\invest\\basic\\profit\\%d%d.csv' % (year, quarter)
 			df = pd.read_csv(filename, encoding='utf-8', index_col=0, dtype={'code':np.str})
 			#print df
 			df = df.set_index('code')
@@ -233,7 +233,7 @@ def GetGrowth(indicator):
 		for quarter in range(1,5):
 			if year == 2017 and quarter == 4:
 				break;
-			filename='c:\\quant\\basic\\growth\\%d%d.csv' % (year, quarter)
+			filename='c:\\invest\\basic\\growth\\%d%d.csv' % (year, quarter)
 			df = pd.read_csv(filename, encoding='utf-8', index_col=0, dtype={'code':np.str})
 			df = df.set_index('code')
 			df = df.drop_duplicates()
@@ -258,7 +258,7 @@ def GetDiv(indicator):
 	
 	ret = DataFrame(index = sz50.index, columns = zzidx)
 	for year in zzidx:
-		filename='c:\\quant\\basic\\div\\%d.csv' % (year)
+		filename='c:\\invest\\basic\\div\\%d.csv' % (year)
 		df = pd.read_csv(filename, encoding='utf-8', index_col=0, dtype={'code':np.str})
 		df = df.drop_duplicates(subset='code', keep='first')
 		df = df.set_index('code')
@@ -293,7 +293,7 @@ def top(df, n=5, column1='pe', column2='pb'):
 if __name__ == "__main__":
 	sz50 = GetHs300()
 	profit = GetProfit('roe')  ## 净资产收益率
-	#profit.to_csv("c:\\quant\\temp.txt")
+	#profit.to_csv("c:\\invest\\temp.txt")
 	#print profit
 	ret1 = set()
 	for code in profit.index:
@@ -308,7 +308,7 @@ if __name__ == "__main__":
 	print '-------roe > 9 percent----- %d'%len(ret1)
 	
 	growth = GetGrowth('nprg') ## 净利润增长率
-	#profit.to_csv("c:\\quant\\temp.txt")
+	#profit.to_csv("c:\\invest\\temp.txt")
 	#print profit
 	sz50 = GetHs300()
 	ret2 = set()
@@ -426,7 +426,7 @@ def GetClose():
 	
 	# ret = basic.groupby('industry').apply(top, column1 ='pe', column2='pb')
 	# print ret
-	# ret[['name','pb', 'pe', 'cc']].to_csv("c:\\quant\\temp.txt")
+	# ret[['name','pb', 'pe', 'cc']].to_csv("c:\\invest\\temp.txt")
 	
 	# dt = datetime.datetime(2016,11,18)
 	# sz50code, namedf, price, volume = GetPriceVolume()
@@ -450,7 +450,7 @@ def GetClose():
 				# print "same: col:%s, idx:%s, report[col][idx]:%s, profit[col][idx]:%s" %(col, idx, report[col][idx], profit[col][idx])
 	
 	# profit = GetGrowth('nprg')
-	# profit.to_csv("c:\\quant\\temp.txt")
+	# profit.to_csv("c:\\invest\\temp.txt")
 	# # #print profit
 	
 	# for code in profit.index:

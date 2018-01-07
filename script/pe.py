@@ -10,17 +10,18 @@ from pandas import DataFrame
 import tushare as ts
 import datetime
 import getdata
+import download
 
 import pdb
 #pdb.set_trace()
 genddate = pd.datetime.today().date().strftime('%Y-%m-%d')
 #genddate = '2017-12-31'
 
-def plotpe(code, ax):
+def plotpe(code, ax, name):
 	global profit, hs300, basic, retpearray
 	sz50code, namedf, price, volume = getdata.GetPriceVolume(code)
 	
-	print "PE: %s: %s" % (code, hs300['name'][code].decode('UTF-8'))
+	print "PE: %s: %s" % (code, name)
 	
 	daterange = pd.date_range('01/01/2012', end = genddate, freq='B')
 	convertrange = daterange.to_pydatetime()
@@ -74,10 +75,10 @@ def plotpe(code, ax):
 	
 	print '------------------------------------------'
 
-def plotpb(code, ax):
+def plotpb(code, ax, name):
 	global profit, hs300, basic, roe, retpbarray
 	sz50code, namedf, price, volume = getdata.GetPriceVolume(code)
-	print "PB: %s: %s" % (code, hs300['name'][code].decode('UTF-8'))
+	print "PB: %s: %s" % (code, name)
 	
 	daterange = pd.date_range('01/01/2012', end = genddate,freq='B')
 	convertrange = daterange.to_pydatetime()
@@ -87,7 +88,6 @@ def plotpb(code, ax):
 	
 	#print netprofit
 	#print roeix
-	
 	#price = price.ix[convertrange[-1]:convertrange[0]]
 	
 	pbseries = Series()
@@ -160,7 +160,6 @@ def plotgrowth(code, ax):
  
 	
 if __name__ == "__main__":
-	
 	global profit, hs300,roe, growth_mbrg, growth_nprg
 	
 	profit = getdata.GetProfit('net_profits')
@@ -170,6 +169,7 @@ if __name__ == "__main__":
 	growth_nprg = getdata.GetGrowth('nprg')
 	
 	hs300 = getdata.GetHs300()
+	zz500 = getdata.GetZz500()
 	
 	retpearray = Series()
 	retpbarray = Series()
@@ -178,44 +178,31 @@ if __name__ == "__main__":
 	#fig, axes = plt.subplots(1,1)
 	#plotpe('000538', axes)
 	#plt.show()
-	
 	#fig, axes = plt.subplots(2,2)
-	ff = open('c:\\quant\\script\\Appliances.txt', 'r')
-	codelist =[]
-	for line in ff:
-		#print line
-		if line[-1] == '\n':
-			codelist.append(line[0:-1])
-	#codelist=['000625', '000423', '000963', '600066', '600048', '600887', '600340', '000538', '601668', '601166']
-	#codelist=['600015', '601166', '000001', '600000', '600036', '600016', '601818','601998']
-	#codelist = ['601668', '600887', '601166', '000001','600886', '000963','000423', '000625', '600066', '600048', '600016', '000538']
-	codelist = ['000423', '000963', '000538', '600887', '000895', '600048', '600340', '601668', '000001', '601166', '600016', '600886', '600066', '000625', '600104', '000883'] ## my holding
-	#codelist = ['600340', '601668']
-
-	#codelist = ['601166', '000001', '600036', '600016', '600000']
-	#codelist = ['000423', '000963', '600519']
-	#codelist = ['601668', '601186', '601800', '601669', '600068']
-	#print codelist
-	#for code in ['000625', '000333', '600887', '600340', '000538', '000423', '600066', '601668', '601166', '600115']:
-	#codelist = ['000900']
+	
+	codelist = download.LoadCodelist('Appliances.txt')
 	fig, axes = plt.subplots(2, len(codelist))
 	
 	cnt = 0
 	for code in codelist:
 		#plotpe(code, axes[1][cnt])
 		#plotpb(code, axes[0][cnt])
-		plotpe(code, axes[0][cnt])
-		plotpb(code, axes[1][cnt])
+		if code in hs300.index:
+			name = hs300['name'][code].decode('UTF-8')
+		elif name in zz500.index:
+			name = zz500['name'][code].decode('UTF-8')
+
+		plotpe(code, axes[0][cnt], name)
+		plotpb(code, axes[1][cnt], name)
 		#plotgrowth(code, axes[2][cnt])
 		cnt = cnt + 1
 
-		
+	plt.show()
+	
 	#for code in codelist:
 	#	print code, hs300['name'][code].decode('UTF-8'),  retpbarray[code], retpearray[code]
 	#print retpearray.mean()
 		
-	plt.show()
-
 	#normalizedpe = (peseries - peseries.min()) / (peseries.max() - peseries.min()) 
 	#normalizedearning = (earningseries - earningseries.min()) / (earningseries.max() - earningseries.min())
 	#normalizedprice = (price[code] - price[code].min()) / (price[code].max() - price[code].min())
