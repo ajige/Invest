@@ -1,4 +1,5 @@
 # coding=utf-8
+from __future__ import division
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -10,8 +11,9 @@ from pandas import Series
 from pandas import DataFrame
 import tushare as ts
 import datetime
-#import pdb
+import pdb
 from scipy.stats.stats import pearsonr 
+
 
 def GetSz50():
 	sz50 = pd.read_csv('c:\\invest\\basic\\sz50.csv', index_col=0, encoding='utf-8', dtype={'code':np.str})
@@ -22,12 +24,11 @@ def GetSz50():
 	return sz50
 	
 def GetHs300():
-	#hs300 = pd.read_csv('c:\\invest\\basic\\hs300.csv', index_col=0, encoding='utf-8', dtype={'code':np.str})
-	hs300 = pd.read_csv('c:\\invest\\basic\\zz500.csv', index_col=0, encoding='utf-8', dtype={'code':np.str})
+	hs300 = pd.read_csv('c:\\invest\\basic\\hs300.csv', index_col=0, encoding='utf-8', dtype={'code':np.str})
+	#hs300 = pd.read_csv('c:\\invest\\basic\\zz500.csv', index_col=0, encoding='utf-8', dtype={'code':np.str})
 	#hs300 = hs300.append({'code':'sh', 'name':'index','date': '2016-08-01','weight':0}, ignore_index=True)
 	#print hs300
-	hs300 = hs300.set_index('code')
-	
+	hs300 = hs300.set_index('code')	
 	#print hs300
 	return hs300
 
@@ -58,8 +59,11 @@ def GetPriceVolume(code=''):
 	if code=='':
 		for idx in range(0, sz50.index.size):
 			code = sz50.index[idx]
-			name = sz50['name'][code].decode('UTF-8')
-			#print code,name
+			#pdb.set_trace()
+			if isinstance(sz50['name'][code], Series):
+				name = sz50['name'][code][0].decode('UTF-8')
+			else: 
+				name = sz50['name'][code].decode('UTF-8')
 			#name = sz50.ix[idx]['name']
 			#print code, name
 			filename = 'C:\invest\\pv\\%s.csv' % (code)
@@ -146,17 +150,17 @@ def GetBasic():
 def GetReport(indicator):
 	sz50 = GetHs300()
 	zzidx = []
-	for year in range(2011, 2018):
+	for year in range(2011, 2019):
 		for quarter in range(1,5):
-			if year == 2017 and quarter == 4:
+			if year > 2017 or (year == 2017 and quarter == 4):
 				break;
 			zzidx.append(year*10 + quarter)
 	#print zzidx
 	
 	profit = DataFrame(index = sz50.index, columns = zzidx)
-	for year in range(2011, 2018):
+	for year in range(2011, 2019):
 		for quarter in range(1,5):
-			if year == 2017 and quarter == 4:
+			if year > 2017 or (year == 2017 and quarter == 4):
 				break;
 			filename = 'c:\\invest\\basic\\report\\%d%d.csv' % (year, quarter)
 			df = pd.read_csv(filename, encoding='utf-8', index_col=0, dtype={'code':np.str})
@@ -185,16 +189,16 @@ def GetReport(indicator):
 def GetProfit(indicator):
 	sz50 = GetHs300()
 	zzidx = []
-	for year in range(2011, 2018):
+	for year in range(2011, 2019):
 		for quarter in range(1,5):
-			if year == 2017 and quarter == 4:
+			if year > 2017 or (year == 2017 and quarter == 4):
 				break;
 			zzidx.append(year*10 + quarter)
 	
 	profit = DataFrame(index = sz50.index, columns = zzidx)
-	for year in range(2011, 2018):
+	for year in range(2011, 2019):
 		for quarter in range(1,5):
-			if year == 2017 and quarter == 4:
+			if year > 2017 or (year == 2017 and quarter == 4):
 				break;
 			filename='c:\\invest\\basic\\profit\\%d%d.csv' % (year, quarter)
 			df = pd.read_csv(filename, encoding='utf-8', index_col=0, dtype={'code':np.str})
@@ -221,17 +225,17 @@ def GetProfit(indicator):
 def GetGrowth(indicator):
 	sz50 = GetHs300()
 	zzidx = []
-	for year in range(2011, 2018):
+	for year in range(2011, 2019):
 		for quarter in range(1,5):
-			if year == 2017 and quarter == 4:
+			if year > 2017 or (year == 2017 and quarter == 4):
 				break;
 			zzidx.append(year*10 + quarter)
 	#print zzidx
 	
 	profit = DataFrame(index = sz50.index, columns = zzidx)
-	for year in range(2011, 2018):
+	for year in range(2011, 2019):
 		for quarter in range(1,5):
-			if year == 2017 and quarter == 4:
+			if year > 2017 or (year == 2017 and quarter == 4):
 				break;
 			filename='c:\\invest\\basic\\growth\\%d%d.csv' % (year, quarter)
 			df = pd.read_csv(filename, encoding='utf-8', index_col=0, dtype={'code':np.str})
@@ -269,6 +273,26 @@ def GetDiv(indicator):
 				
 	return ret
 
+def GetIndustry(industry, subindustry=''):
+	filename = 'c:\\invest\\basic\\industry.csv' 
+	df = pd.read_csv(filename, encoding='utf-8', index_col=0, dtype={'code':np.str})
+	df = df.drop_duplicates(subset='code', keep='first')	
+	df = df.set_index('c_name')
+	#print df.ix[industry]
+
+	ret = []
+	for idx, row in df.iterrows():
+		if idx == industry:
+			if len(subindustry) > 0: 
+				if row['name'].find(subindustry) != -1:
+					#print "%s:%s" %( row['code'],row['name'])
+					ret.append((row['name'], row['code']))
+			else:
+				ret.append((row['name'], row['code']))
+	print ret
+	return ret
+
+	
 #filter function, do filter
 def Filter(report, level):
 	for code in report.index:
@@ -291,6 +315,7 @@ def top(df, n=5, column1='pe', column2='pb'):
 	return abovezero.sort_index(by='cc')[:n]
 	
 if __name__ == "__main__":
+	GetIndustry(u'建筑建材')
 	sz50 = GetHs300()
 	profit = GetProfit('roe')  ## 净资产收益率
 	#profit.to_csv("c:\\invest\\temp.txt")
@@ -298,14 +323,14 @@ if __name__ == "__main__":
 	ret1 = set()
 	for code in profit.index:
 		flag = True
-		for period in [20144,20154,20164]:
+		for period in [20144,20154,20164,20173]:
 			#print profit[period][code]
 			if profit[period][code] < 9:
 				flag = False
 		if flag == True:
 			print code, sz50['name'][code]
 			ret1.add(code)
-	print '-------roe > 9 percent----- %d'%len(ret1)
+	print '-------roe > 9 percent----- %d'% len(ret1)
 	
 	growth = GetGrowth('nprg') ## 净利润增长率
 	#profit.to_csv("c:\\invest\\temp.txt")
@@ -314,7 +339,7 @@ if __name__ == "__main__":
 	ret2 = set()
 	for code in growth.index:
 		flag = True
-		for period in [20144, 20154,20164]:
+		for period in [20144, 20154,20164,20173]:
 			#print profit[period][code]
 			if growth[period][code] < 5:
 				flag = False
@@ -339,13 +364,18 @@ if __name__ == "__main__":
 	
 	retz = ret1&ret2			
 	sz50code, namedf, price, volume = GetPriceVolume()
-	dt = datetime.datetime(2017,10,20)
+	dt = datetime.datetime(2018,01,12)
 	eps = GetProfit('eps')
 	bvps = GetBasic()
 	for code in retz:
-		if code not in ['000625', '000423', '000963', '600066', '600048', '600887', '600340', '000538', '601668', '000001',  '601166', '600886', '600016', '600104']:
-			print code, sz50['name'][code], price[code][dt]/eps[20164][code], price[code][dt]/bvps['bvps'][code], profit[20164][code], profit[20154][code], profit[20144][code], growth[20164][code], growth[20154][code], growth[20144][code]
+		#if code not in ['000625', '000423', '000963', '600066', '600048', '600887', '600340', '000538', '601668', '000001',  '601166', '600886', '600016', '600104']:
+		print code, sz50['name'][code], price[code][dt]/eps[20173][code], price[code][dt]/bvps['bvps'][code], profit[20173][code], profit[20164][code], profit[20154][code], profit[20144][code], growth[20173][code], growth[20164][code], growth[20154][code], growth[20144][code]
 	print '---------------------'
+	
+	
+	odt = datetime.datetime(2014,01,13)
+	for code in retz:
+		print code, sz50['name'][code], price[code][dt] / price[code][odt]
 	
 	'''
 	for code in retz:

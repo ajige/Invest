@@ -42,12 +42,17 @@ def LoadCodelist(filename=''):
 	
 	if len(filename) == 0:
 		codelist = ['000625', '000423', '000963', '600066', '600048', '600887', '600340', '000538', '601668', '000001',  '601166', '600886', '600016', '600104', '000883']
+		#codelist = ['000423', '000963', '000538', '600887', '000895', '600048', '600340', '601668', '000001', '601166', '600016', '600886', '600066', '000625', '600104', '000883']
+		#codelist = GetHs300().index
 	else:
 		fp = open("c:\\invest\\script\\code\\" + filename, 'r')
 		for line in fp:
+			line = line.strip('\n')
+			if len(line) < 5:
+				continue
 			tokens = line.split(':')
 			if len(tokens) > 0:
-				codelist.append(tokens[0].strip('\n'))
+				codelist.append(tokens[0])
 	return codelist
 	
 	#codelist=['000625', '000423', '000963', '600066', '600048', '600887', '600340', '000538', '601668', '601166']
@@ -90,24 +95,30 @@ def loadpv(filename=''):
 			print "%s finish" % filename
 			
 def loadprofit():
-	for year in [2017]:
-	  for quarter in [3]:
+	for year in [2011,2012,2013,2014,2015,2016,2017]:
+	  for quarter in [1,2,3,4]:
+		 if quarter == 4 and year ==2017:
+			break
 		 profit = ts.get_profit_data(year, quarter)
 		 filename = "C:\invest\\basic\\profit\\%s%s.csv" % (year, quarter)
 		 print filename
 		 profit.to_csv(filename, encoding='utf-8')
 
 def loadgrowth():
-	for year in [2017]:
-	  for quarter in [3]:
+	for year in [2011,2012,2013,2014,2015,2016,2017]:
+	  for quarter in  [1,2,3,4]:
+	  	 if quarter == 4 and year ==2017:
+			break
 		 profit = ts.get_growth_data(year, quarter)
 		 filename = "C:\invest\\basic\\growth\\%s%s.csv" % (year, quarter)
 		 print filename
 		 profit.to_csv(filename, encoding='utf-8')
 		 
 def loadreport():
-	for year in [2017]:
-	  for quarter in [3]:
+	for year in [2011,2012,2013,2014,2015,2016,2017]:
+	  for quarter in  [1,2,3,4]:
+		 if quarter == 4 and year ==2017:
+			break
 		 profit = ts.get_report_data(year, quarter)
 		 filename = "C:\invest\\basic\\report\\%s%s.csv" % (year, quarter)
 		 print filename
@@ -115,12 +126,13 @@ def loadreport():
 
 
 if __name__ == "__main__":		 
-	loadpv('Appliances.txt')
+	#loadpv('holdings.txt')
 
-#loadprofit()
-#loadgrowth()
-#loadreport()
-
+	#loadprofit()
+	#loadgrowth()
+	#loadreport()
+	#loadindustry()
+	
 #code = 'sh'
 #filename = "C:\invest\\tsdata\%s.csv" % code
 #df = ts.get_hist_data(code, start="2012-01-01",  end="2016-11-20")

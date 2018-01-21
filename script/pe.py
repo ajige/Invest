@@ -152,11 +152,11 @@ def plotgrowth(code, ax):
 	global profit, hs300, roe, growth_mbrg, growth_nprg
 	print hs300['name'][code].decode('UTF-8')
 	print growth_mbrg.ix[code]
-	print growth_nprg.ix[code]
-	ax.plot(growth_mbrg.ix[code], color='b', marker='o')
+	#print growth_nprg.ix[code]
+	#ax.plot(growth_mbrg.ix[code], color='b', marker='o')
 	#ax.plot(growth_nprg.ix[code], color='r', marker='o')
-	ax.set_title(code + ' growth')
-	print '------------------------------------------'	
+	#ax.set_title(code + ' growth')
+	#print '------------------------------------------'	
  
 	
 if __name__ == "__main__":
@@ -180,6 +180,8 @@ if __name__ == "__main__":
 	#plt.show()
 	#fig, axes = plt.subplots(2,2)
 	
+	#codelist = download.LoadCodelist('holdings.txt')
+	#codelist = download.LoadCodelist('constructioncode.txt')
 	codelist = download.LoadCodelist('realeastatecode')
 	fig, axes = plt.subplots(2, len(codelist))
 	
@@ -194,7 +196,7 @@ if __name__ == "__main__":
 
 		plotpe(code, axes[0][cnt], name)
 		plotpb(code, axes[1][cnt], name)
-		#plotgrowth(code, axes[2][cnt])
+		#plotgrowth(code, axes[0][cnt])
 		cnt = cnt + 1
 
 	plt.show()

@@ -5,6 +5,7 @@ from pandas import Series
 from pandas import DataFrame
 import tushare as ts
 import getdata
+import download
 from scipy.stats.stats import pearsonr 
 
 def GetClose():
@@ -12,10 +13,6 @@ def GetClose():
 	ret = Series(index = date)
 	prev = 0
 	firstunzero = 0
-	#print ret.index
-	#print second.index
-	#for d in ret.index:
-	#	print d
 		
 	for d in ret.index:
 		if d in second.index:
@@ -45,7 +42,6 @@ df = DataFrame(columns=sz50code)
 rawdict = {}
 namedf = {}
 	
-
 sz50code, nameseries, price, volume = getdata.GetPriceVolume()
 corrdf = price.corr()
 vvdf = volume.corr()
@@ -53,15 +49,14 @@ vvdf = volume.corr()
 #print corrdf['000423']['sh']
 #print corrdf['000963']['sh']
 #codelist = ['000625', '000423', '000963', '600887', '600048', '600066']
-codelist = ['601668', '600887', '601166', '000001','600886', '000963','000423', '000625', '600066', '600048', '000538']
+codelist = download.LoadCodelist()
 
 for code in codelist:
 	for c2 in codelist:
 		if code != c2:
-			print "%s: %s : %f, %f"  %(sz50['name'][code].decode('UTF-8'), sz50['name'][c2].decode('UTF-8'), corrdf[code][c2], vvdf[code][c2])
-
-
-			
+			print code, c2
+			print "%s: %s : %f, %f" %(sz50['name'][code].decode('UTF-8'), sz50['name'][c2].decode('UTF-8'), corrdf[code][c2], vvdf[code][c2])
+		
 	# for idx in range(0, sz50.index.size):
 	# code = sz50.index[idx]
 	# name = sz50['name'][code].decode('UTF-8')
@@ -81,7 +76,6 @@ for code in codelist:
 # price  = DataFrame({tick: data['close'] for tick, data in rawdict.iteritems()})
 # volume = DataFrame({tick: data['volume'] for tick, data in rawdict.iteritems()})	
 # final  = DataFrame(columns= sz50code, index=sz50code)
-
 
 #0.886006129806
 #0.546253346158
